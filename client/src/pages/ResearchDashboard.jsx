@@ -21,7 +21,7 @@ export default function ResearchDashboard() {
   useEffect(() => {
 
     axios
-      .get("http://localhost:5000/api/patients")
+      .axios.get("https://vita-ai-4j8b.onrender.com/api/patients")
       .then((res) => {
         setPatients(res.data);
       })

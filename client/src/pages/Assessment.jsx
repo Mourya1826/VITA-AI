@@ -168,8 +168,7 @@ const patientData = {
 
 try {
 
-  await axios.post(
-    "http://localhost:5000/api/patients",
+  await axios.post("https://vita-ai-4j8b.onrender.com/api/patients",
     patientData
   );
 
