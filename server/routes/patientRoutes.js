@@ -5,7 +5,7 @@ const router = express.Router();
 const {
   createPatient,
   getPatients
-} = require("../controllers/patientcontroller");
+} = require("../controllers/patientController");
 
 router.post("/", createPatient);
 
