@@ -5,7 +5,8 @@ const router = express.Router();
 const {
   createPatient,
   getPatients,
-  getPatientById
+  getPatientById,
+  deletePatient
 } = require("../controllers/patientController");
 
 router.post("/", createPatient);
@@ -13,5 +14,6 @@ router.post("/", createPatient);
 router.get("/", getPatients);
 
 router.get("/:id", getPatientById);
+router.delete("/:id", deletePatient);
 
 module.exports = router;

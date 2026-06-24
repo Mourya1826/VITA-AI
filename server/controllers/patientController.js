@@ -51,3 +51,22 @@ exports.getPatientById = async (req, res) => {
 
   }
 };
+exports.deletePatient = async (req, res) => {
+  try {
+
+    await Patient.findByIdAndDelete(
+      req.params.id
+    );
+
+    res.json({
+      message: "Patient Deleted"
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
+};

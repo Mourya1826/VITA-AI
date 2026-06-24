@@ -20,7 +20,37 @@ export default function ResearchDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [riskFilter, setRiskFilter] = useState("All");
   const navigate = useNavigate();
+  const deletePatient = async (id) => {
 
+  const confirmDelete =
+    window.confirm(
+      "Delete this patient?"
+    );
+
+  if (!confirmDelete)
+  {
+    return;
+  }
+
+  try {
+
+    await axios.delete(
+      `https://vita-ai-4j8b.onrender.com/api/patients/${id}`
+    );
+
+    setPatients(
+      patients.filter(
+        (patient) =>
+          patient._id !== id
+      )
+    );
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
+};
   
 
   useEffect(() => {
@@ -61,6 +91,48 @@ patients.length > 0
     ) / patients.length
   ).toFixed(1)
 : 0;
+const maleCount =
+patients.filter(
+  (p) => p.gender === "Male"
+).length;
+
+const femaleCount =
+patients.filter(
+  (p) => p.gender === "Female"
+).length;
+
+const genderData = [
+  {
+    name: "Male",
+    value: maleCount
+  },
+  {
+    name: "Female",
+    value: femaleCount
+  }
+];
+const ageData = [
+  {
+    group: "0-20",
+    count: patients.filter(
+      (p) => p.age <= 20
+    ).length
+  },
+  {
+    group: "21-40",
+    count: patients.filter(
+      (p) =>
+        p.age > 20 &&
+        p.age <= 40
+    ).length
+  },
+  {
+    group: "41+",
+    count: patients.filter(
+      (p) => p.age > 40
+    ).length
+  }
+];
 <div
   style={{
     background: "#dbeafe",
@@ -87,36 +159,61 @@ patients.length > 0
       value: highRisk
     }
   ];
+<h2>
+  Section-wise Analysis
+</h2>
 
   const sectionData = [
-    {
-      name: "Section A",
-      value:
-        patients.reduce(
-          (sum, p) =>
-            sum + (p.sectionA || 0),
-          0
-        )
-    },
-    {
-      name: "Section B",
-      value:
-        patients.reduce(
-          (sum, p) =>
-            sum + (p.sectionB || 0),
-          0
-        )
-    },
-    {
-      name: "Section C",
-      value:
-        patients.reduce(
-          (sum, p) =>
-            sum + (p.sectionC || 0),
-          0
-        )
-    }
-  ];
+  {
+    name: "Section A",
+    value:
+      patients.reduce(
+        (sum, p) =>
+          sum + (p.sectionA || 0),
+        0
+      )
+  },
+
+  {
+    name: "Section B",
+    value:
+      patients.reduce(
+        (sum, p) =>
+          sum + (p.sectionB || 0),
+        0
+      )
+  },
+
+  {
+    name: "Section C",
+    value:
+      patients.reduce(
+        (sum, p) =>
+          sum + (p.sectionC || 0),
+        0
+      )
+  },
+
+  {
+    name: "Section D",
+    value:
+      patients.reduce(
+        (sum, p) =>
+          sum + (p.sectionD || 0),
+        0
+      )
+  },
+
+  {
+    name: "Section E",
+    value:
+      patients.reduce(
+        (sum, p) =>
+          sum + (p.sectionE || 0),
+        0
+      )
+  }
+];
   const filteredPatients =
   patients.filter((patient) => {
 
@@ -218,6 +315,18 @@ patients.length > 0
     <h2>{highRisk}</h2>
     <p>High Risk</p>
   </div>
+  <div
+  style={{
+    background: "#dbeafe",
+    padding: "20px",
+    borderRadius: "12px",
+    width: "220px"
+  }}
+>
+  <h2>{averageScore}</h2>
+  <p>Average Score</p>
+</div>
+  
 
 </div>
 
@@ -233,7 +342,7 @@ patients.length > 0
 
   
 </div>
-
+    <h2>Risk Analysis</h2>
       <PieChart width={700} height={450}>
         <Pie
           data={pieData}
@@ -250,6 +359,50 @@ patients.length > 0
       </PieChart>
 
       <br />
+      <h2>Gender Analysis</h2>
+
+<PieChart
+  width={500}
+  height={350}
+>
+  <Pie
+    data={genderData}
+    dataKey="value"
+    outerRadius={120}
+    label
+  >
+    <Cell fill="#0f766e" />
+    <Cell fill="#ec4899" />
+  </Pie>
+
+  <Tooltip />
+</PieChart>
+<h2>Age Group Analysis</h2>
+
+<BarChart 
+
+  width={700}
+  height={350}
+  data={ageData}
+>
+  <CartesianGrid
+    strokeDasharray="3 3"
+  />
+
+  <XAxis dataKey="group" />
+
+  <YAxis />
+
+  <Tooltip />
+
+  <Bar
+    dataKey="count"
+    fill="#0f766e"
+  />
+</BarChart>
+<h2>
+  Section-wise Analysis
+</h2>
 
       <BarChart
         width={1000}
@@ -424,22 +577,46 @@ patients.length > 0
 </td>
 
 <td>
+
   <button
-  onClick={() =>
-    navigate(`/patient/${patient._id}`)
-  }
-  style={{
-    background: "#0f766e",
-    color: "white",
-    border: "none",
-    padding: "8px 14px",
-    borderRadius: "8px",
-    cursor: "pointer"
-  }}
->
-  View
-</button>
+    onClick={() =>
+      navigate(
+        `/patient/${patient._id}`
+      )
+    }
+    style={{
+      background: "#0f766e",
+      color: "white",
+      border: "none",
+      padding: "8px 14px",
+      borderRadius: "8px",
+      cursor: "pointer",
+      marginRight: "8px"
+    }}
+  >
+    View
+  </button>
+
+  <button
+    onClick={() =>
+      deletePatient(
+        patient._id
+      )
+    }
+    style={{
+      background: "#dc2626",
+      color: "white",
+      border: "none",
+      padding: "8px 14px",
+      borderRadius: "8px",
+      cursor: "pointer"
+    }}
+  >
+    Delete
+  </button>
+
 </td>
+
 
                 </tr>
 
