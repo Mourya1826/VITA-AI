@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 import {
   PieChart,
   Pie,
@@ -17,6 +17,11 @@ import {
 export default function ResearchDashboard() {
 
   const [patients, setPatients] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [riskFilter, setRiskFilter] = useState("All");
+  const navigate = useNavigate();
+
+  
 
   useEffect(() => {
 
@@ -45,6 +50,28 @@ export default function ResearchDashboard() {
     patients.filter(
       (p) => p.riskCategory === "High Risk"
     ).length;
+
+  const averageScore =
+patients.length > 0
+? (
+    patients.reduce(
+      (sum, p) =>
+        sum + (p.totalScore || 0),
+      0
+    ) / patients.length
+  ).toFixed(1)
+: 0;
+<div
+  style={{
+    background: "#dbeafe",
+    padding: "20px",
+    borderRadius: "12px",
+    width: "220px"
+  }}
+>
+  <h2>{averageScore}</h2>
+  <p>Average Score</p>
+</div>
 
   const pieData = [
     {
@@ -90,6 +117,27 @@ export default function ResearchDashboard() {
         )
     }
   ];
+  const filteredPatients =
+  patients.filter((patient) => {
+
+    const matchesName =
+      patient.name
+        ?.toLowerCase()
+        .includes(
+          searchTerm.toLowerCase()
+        );
+
+    const matchesRisk =
+      riskFilter === "All"
+        ? true
+        : patient.riskCategory === riskFilter;
+
+    return (
+      matchesName &&
+      matchesRisk
+    );
+
+  });
 
   return (
   <div
@@ -102,30 +150,76 @@ export default function ResearchDashboard() {
       
     }}
   >
-      <h1>
-        Research Dashboard
-        
-      </h1>
+      <h1
+  style={{
+    fontSize: "42px",
+    marginBottom: "30px",
+    color: "#2563eb"
+  }}
+>
+  VITA-AI Research Dashboard
+</h1>
 
-      <h2>
-        Total Patients:
-        {patients.length}
-      </h2>
+      <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "20px",
+    marginBottom: "40px",
+    flexWrap: "wrap"
+  }}
+>
 
-      <h3>
-        Low Risk:
-        {lowRisk}
-      </h3>
+  <div
+    style={{
+      background: "#ffffff",
+      padding: "20px",
+      borderRadius: "12px",
+      width: "220px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+    }}
+  >
+    <h2>{patients.length}</h2>
+    <p>Total Patients</p>
+  </div>
 
-      <h3>
-        Moderate Risk:
-        {moderateRisk}
-      </h3>
+  <div
+    style={{
+      background: "#dcfce7",
+      padding: "20px",
+      borderRadius: "12px",
+      width: "220px"
+    }}
+  >
+    <h2>{lowRisk}</h2>
+    <p>Low Risk</p>
+  </div>
 
-      <h3>
-        High Risk:
-        {highRisk}
-      </h3>
+  <div
+    style={{
+      background: "#fef9c3",
+      padding: "20px",
+      borderRadius: "12px",
+      width: "220px"
+    }}
+  >
+    <h2>{moderateRisk}</h2>
+    <p>Moderate Risk</p>
+  </div>
+
+  <div
+    style={{
+      background: "#fee2e2",
+      padding: "20px",
+      borderRadius: "12px",
+      width: "220px"
+    }}
+  >
+    <h2>{highRisk}</h2>
+    <p>High Risk</p>
+  </div>
+
+</div>
 
       <br />
       <div
@@ -135,25 +229,9 @@ export default function ResearchDashboard() {
     marginBottom: "40px"
   }}
 >
-  <div>
-    <h2>{patients.length}</h2>
-    <p>Total Patients</p>
-  </div>
+  
 
-  <div>
-    <h2>{lowRisk}</h2>
-    <p>Low Risk</p>
-  </div>
-
-  <div>
-    <h2>{moderateRisk}</h2>
-    <p>Moderate Risk</p>
-  </div>
-
-  <div>
-    <h2>{highRisk}</h2>
-    <p>High Risk</p>
-  </div>
+  
 </div>
 
       <PieChart width={700} height={450}>
@@ -198,23 +276,120 @@ export default function ResearchDashboard() {
 
       <br />
 
-      <table border="1">
+      <table
+  style={{
+    width: "100%",
+    borderCollapse: "collapse",
+    marginTop: "20px",
+    background: "white",
+    boxShadow:
+      "0 4px 12px rgba(0,0,0,0.1)"
+  }}
+>
+        <br />
+
+<input
+  type="text"
+  placeholder="Search Patient Name..."
+  value={searchTerm}
+  onChange={(e) =>
+    setSearchTerm(e.target.value)
+  }
+  style={{
+    padding: "12px",
+    width: "350px",
+    marginBottom: "20px",
+    borderRadius: "8px",
+    border: "1px solid #ccc"
+  }}
+/>
+
+<table border="1"></table>
+<select
+  value={riskFilter}
+  onChange={(e) =>
+    setRiskFilter(
+      e.target.value
+    )
+  }
+  style={{
+    padding: "12px",
+    marginLeft: "15px",
+    borderRadius: "8px"
+  }}
+>
+  <option value="All">
+    All Patients
+  </option>
+
+  <option value="Low Risk">
+    Low Risk
+  </option>
+
+  <option value="Moderate Risk">
+    Moderate Risk
+  </option>
+
+  <option value="High Risk">
+    High Risk
+  </option>
+</select>
 
         <thead>
 
           <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Score</th>
-            <th>Risk</th>
-          </tr>
+  <th
+  style={{
+    background: "#2563eb",
+    color: "white",
+    padding: "12px"
+  }}
+>
+  Name
+</th>
+  <th
+  style={{
+    background: "#2563eb",
+    color: "white",
+    padding: "12px"
+  }}
+>Age</th>
+  <th
+  style={{
+    background: "#2563eb",
+    color: "white",
+    padding: "12px"
+  }}
+>Gender</th>
+  <th
+  style={{
+    background: "#2563eb",
+    color: "white",
+    padding: "12px"
+  }}
+>Score</th>
+  <th
+  style={{
+    background: "#2563eb",
+    color: "white",
+    padding: "12px"
+  }}
+>Risk</th>
+  <th
+  style={{
+    background: "#2563eb",
+    color: "white",
+    padding: "12px"
+  }}
+>Actions</th>
+</tr>
 
         </thead>
 
         <tbody>
 
           {
-            patients.map(
+           filteredPatients.map(
               (patient) => (
 
                 <tr
@@ -224,17 +399,47 @@ export default function ResearchDashboard() {
                     {patient.name}
                   </td>
 
-                  <td>
-                    {patient.age}
-                  </td>
+                  <td>{patient.age}</td>
 
-                  <td>
-                    {patient.totalScore}
-                  </td>
+<td>{patient.gender}</td>
 
-                  <td>
-                    {patient.riskCategory}
-                  </td>
+<td>{patient.totalScore}</td>
+
+<td>
+  <span
+    style={{
+      padding: "6px 12px",
+      borderRadius: "20px",
+      color: "white",
+      background:
+        patient.riskCategory === "High Risk"
+          ? "#ef4444"
+          : patient.riskCategory === "Moderate Risk"
+          ? "#f59e0b"
+          : "#22c55e"
+    }}
+  >
+    {patient.riskCategory}
+  </span>
+</td>
+
+<td>
+  <button
+  onClick={() =>
+    navigate(`/patient/${patient._id}`)
+  }
+  style={{
+    background: "#0f766e",
+    color: "white",
+    border: "none",
+    padding: "8px 14px",
+    borderRadius: "8px",
+    cursor: "pointer"
+  }}
+>
+  View
+</button>
+</td>
 
                 </tr>
 

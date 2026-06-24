@@ -3,7 +3,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Assessment from "./pages/Assessment";
 import Result from "./pages/Result";
+import PatientProfile from "./pages/PatientProfile";
 import ResearchDashboard
+
 from "./pages/ResearchDashboard";
 function App() {
   return (
@@ -24,6 +26,10 @@ function App() {
           path="/result"
           element={<Result />}
         />
+        <Route
+  path="/patient/:id"
+  element={<PatientProfile />}
+/>
         <Route
   path="/dashboard"
   element={<ResearchDashboard />}
